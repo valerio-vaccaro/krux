@@ -45,7 +45,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
     list(APPEND ADD_PRIVATE_INCLUDE "${mpy_port_dir}/src/nes/mapper")
     ###############################################
 
-    
+
 
     ############## Add source files ###############
     append_srcs_dir(MPY_PORT_SRCS "port/src")
@@ -60,7 +60,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
     append_srcs_dir(MPY_PORT_SRCS "port/src/modules/onewire")
     append_srcs_dir(MPY_PORT_SRCS "port/src/speech/")
     append_srcs_dir(MPY_PORT_SRCS "port/src/speech/maix_asr")
-    list(APPEND ADD_STATIC_LIB "port/src/speech/maix_asr/libmaix_asr.a") # append_srcs_dir(MPY_PORT_SRCS "port/src/speech/maix_asr/src")
+    #list(APPEND ADD_STATIC_LIB "port/src/speech/maix_asr/libmaix_asr.a") # append_srcs_dir(MPY_PORT_SRCS "port/src/speech/maix_asr/src")
     append_srcs_dir(MPY_PORT_SRCS "port/src/speech/isolated_word")
     append_srcs_dir(MPY_PORT_SRCS "port/src/modules/ws2812/src")
     append_srcs_dir(MPY_PORT_SRCS "port/src/modules/htpa/src")
@@ -82,7 +82,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
     append_srcs_dir(MPY_PORT_SRCS "port/src/standard_lib/uos")
     append_srcs_dir(MPY_PORT_SRCS "port/src/standard_lib/utime")
 
-    list(APPEND MPY_SRCS    
+    list(APPEND MPY_SRCS
                     "core/py/mpstate.c"
                     "core/py/nlr.c"
                     "core/py/nlrx86.c"
@@ -197,7 +197,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
                     "core/py/frozenmod.c"
             )
 
-    list(APPEND MPY_EXTMOD_SRCS 
+    list(APPEND MPY_EXTMOD_SRCS
                         "core/extmod/moductypes.c"
                         "core/extmod/modujson.c"
                         "core/extmod/modure.c"
@@ -322,7 +322,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
         file(RELATIVE_PATH LVGL_MPY_GEN_SRC_REL ${CMAKE_CURRENT_LIST_DIR} ${LVGL_MPY_GEN_SRC})
         list(APPEND ADD_SRCS ${LVGL_MPY_SRCS} ${LVGL_MPY_GEN_SRC_REL})
         set_property(SOURCE ${LVGL_MPY_GEN_SRC} PROPERTY GENERATED 1)
-        
+
         set(lvgl_gen_py_tool ${mpy_port_dir}/src/lvgl/lv_bindings/gen/gen_mpy.py)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLV_CONF_H=1 -DLV_CONF_INCLUDE_SIMPLE")
     else()
@@ -403,7 +403,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
     set(include_dir_flags ${ADD_INCLUDE})
     prepend(include_dir_flags "-I" ${include_dir_flags})
     foreach(component ${components_requirements})
-        get_target_property(include_dir ${component} INTERFACE_INCLUDE_DIRECTORIES)    
+        get_target_property(include_dir ${component} INTERFACE_INCLUDE_DIRECTORIES)
         prepend(include_dir "-I" ${include_dir})
         list(APPEND include_dir_flags ${include_dir})
     endforeach()
@@ -487,7 +487,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
         )
 
     abspath(QSTR_SRCS_FULL_PATH ${QSTR_SRCS})
-    add_custom_target(gen_qstr_i_last 
+    add_custom_target(gen_qstr_i_last
             COMMAND ${CMAKE_C_COMPILER} -E ${QSTR_GEN_EXTRA_CFLAGS} ${cmd_param_cflag} ${cmd_param_cinclude} -DFFCONF_H="${mpy_core_dir}/lib/oofatfs/ffconf.h" ${QSTR_SRCS_FULL_PATH} ${QSTR_GLOBAL_DEPENDENCIES} > ${mpy_build_gen_header_dir}/qstr.i.last
             DEPENDS gen_module_defs ${QSTR_GLOBAL_DEPENDENCIES} ${QSTR_SRCS}
             VERBATIM
@@ -499,13 +499,13 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
             DEPENDS gen_qstr_i_last
             VERBATIM
         )
-    add_custom_target(gen_mpy_cross  
+    add_custom_target(gen_mpy_cross
             COMMAND ${CMAKE_MAKE_PROGRAM} -C ${mpy_core_dir}/mpy-cross
             COMMENT "Generate mpy-cross ..."
         )
     separate_arguments(cmd_sed0 NATIVE_COMMAND "s/^Q(.*)/\"&\"/")
     separate_arguments(cmd_sed1 NATIVE_COMMAND "s/^\"\\(Q(.*)\\)\"/\\1/")
-    
+
     add_custom_command(OUTPUT ${mpy_build_gen_header_dir}/qstrdefs.preprocessed.h
                     COMMAND cat ${PY_QSTR_DEFS} ${QSTR_DEFS} ${QSTR_DEFS_COLLECTED} | sed '${cmd_sed0}' | ${CMAKE_C_COMPILER} -E ${cmd_param_cflag} ${cmd_param_cinclude} - | sed '${cmd_sed1}' > ${mpy_build_gen_header_dir}/qstrdefs.preprocessed.h
                     DEPENDS gen_mpy_cross gen_version_header gen_module_defs gen_collected_h gen_qstr_i_last ${QSTR_DEFS_COLLECTED}
@@ -514,7 +514,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
                     COMMAND ${python} ${mpy_core_src_dir}/makeqstrdata.py ${mpy_build_gen_header_dir}/qstrdefs.preprocessed.h > ${qstr_header}
                     DEPENDS ${mpy_build_gen_header_dir}/qstrdefs.preprocessed.h gen_qstr_i_last
                 )
-    
+
     file(GLOB frozen_py "${mpy_frozen_py_dir}/*.py")
     if(NOT CONFIG_MAIXPY_BUILTIN_PY_PYE)
         list(REMOVE_ITEM frozen_py "${mpy_frozen_py_dir}/pye_mp.py")
@@ -531,7 +531,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
         string(REPLACE ".py" ".mpy" mpy ${py})
         set(mpy_path ${mpy_build_mpy_dir}/${py_name}.mpy)
         list(APPEND frozen_mpy ${mpy_path})
-        add_custom_command(OUTPUT ${mpy_path} 
+        add_custom_command(OUTPUT ${mpy_path}
                             COMMAND mkdir -p ${mpy_build_mpy_dir}
                             DEPENDS ${py}
                             COMMAND ${mpy_core_dir}/mpy-cross/mpy-cross -o ${mpy_path} -s ${py_name}.py ${py}
@@ -540,7 +540,7 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
     endforeach()
     add_custom_command(OUTPUT ${MPY_FROZEN_SRC}
                 COMMAND ${python} ${mpy_core_dir}/tools/mpy-tool.py -f -q ${mpy_build_gen_header_dir}/qstrdefs.preprocessed.h ${frozen_mpy} > ${MPY_FROZEN_SRC}
-                DEPENDS ${qstr_header} ${frozen_mpy} 
+                DEPENDS ${qstr_header} ${frozen_mpy}
             )
 
     ################################
@@ -564,4 +564,3 @@ if(CONFIG_COMPONENT_MICROPYTHON_ENABLE)
     register_component()
 
 endif()
-
